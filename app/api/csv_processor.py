@@ -23,10 +23,13 @@ def upload_file():
     request_id = str(uuid.uuid4())
     csv_data = file.read().decode('utf-8')
     csv_reader = csv.reader(StringIO(csv_data), delimiter=',')
-    next(csv_reader)  # Skip header row
+    next(csv_reader)
 
     products = []
     for row in csv_reader:
+        if len(row) != 3:
+            return jsonify({'error': 'Invalid CSV file'}), 400
+
         serial_number, product_name, input_image_urls = row
         product = {
             'request_id': request_id,
@@ -77,3 +80,35 @@ def check_status(request_id):
         'status': request['status'],
         'products': products_data
     })
+
+
+@csv_processor_v1.route('/output/<request_id>', methods=['GET'])
+def download_output(request_id):
+    request = db.find_processing_request(request_id)
+    if not request:
+        return jsonify({'error': 'Invalid request ID'}), 404
+    
+    if request['status'] != 'completed':
+        return jsonify({'error': 'Request is not completed yet'}), 400
+    
+    products = db.find_all_products(request_id)
+    data = [
+        ['serial_number', 'product_name', 'input_image_urls', 'output_image_urls']
+    ]
+    for product in products:
+        data.append([
+            product['serial_number'],
+            product['product_name'],
+            ','.join(product['input_image_urls']),
+            ','.join(product['output_image_urls'])
+        ])
+    
+    output = StringIO()
+    csv_writer = csv.writer(output)
+    csv_writer.writerows(data)
+    output.seek(0)
+
+    return output.getvalue(), 200, {
+        'Content-Type': 'text/csv',
+        'Content-Disposition': f'attachment; filename={request_id}.csv'
+    }
