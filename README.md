@@ -36,6 +36,10 @@ The system is built using Python and Flask, with MongoDB as the database. The im
   - **Endpoint**: `/csv/status/<request_id>`
   - **Method**: GET
   - **Response**: JSON with the processing status and product details.
+- **Output API**: returns the output as a CSV file.
+  - **Endpoint**: `/csv/output/<request_id>`
+  - **Method**: GET
+  - **Response**: CSV file with the processed data.
 
 ### Database Schema
 The database schema includes two collections:
@@ -59,4 +63,4 @@ The asynchronous worker function is implemented in `process_helper.py`. It proce
 The project code is available in the GitHub repository: [GitHub Repository](https://github.com/satyamrs00/moonbeams)
 
 ### Postman Collection
-A Postman collection for testing the APIs is available at: [Postman Collection]([path/to/postman_collection.json](https://www.postman.com/satyamrs00/workspace/spyne/collection/23277225-30b3b8ea-826e-4a3d-a21e-13119fef6471?action=share&creator=23277225))
+A Postman collection for testing the APIs is available at: [Postman Collection](https://www.postman.com/satyamrs00/workspace/spyne/collection/23277225-30b3b8ea-826e-4a3d-a21e-13119fef6471?action=share&creator=23277225)

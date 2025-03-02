@@ -19,7 +19,6 @@ def upload_file():
     if not file:
         return jsonify({'error': 'No file provided'}), 400
 
-    # Validate and process CSV file
     request_id = str(uuid.uuid4())
     csv_data = file.read().decode('utf-8')
     csv_reader = csv.reader(StringIO(csv_data), delimiter=',')
