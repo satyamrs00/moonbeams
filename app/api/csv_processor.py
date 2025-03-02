@@ -5,6 +5,8 @@ import uuid
 import csv
 from datetime import datetime
 from app import db
+from app.helpers import process_helper
+from threading import Thread
 
 csv_processor_v1 = Blueprint(
     'csv_processor_v1', 'csv_processor_v1', url_prefix='/csv')
@@ -45,8 +47,9 @@ def upload_file():
     db.create_processing_request(processing_request)
     db.create_products(products)
 
-    # Enqueue task
-    # process_images.delay(request_id)
+    # run process images task on new thread
+    thread = Thread(target=process_helper.process_images, args=(request_id,))
+    thread.start()    
 
     return jsonify({'request_id': request_id})
 
